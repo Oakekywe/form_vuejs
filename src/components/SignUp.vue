@@ -1,10 +1,11 @@
 <template>
   <!-- <h2>Sign Up Form</h2> -->
-  <form >
+  <form @submit.prevent="submit">
     <label>Email</label>
     <input type="email" v-model="email" required>
     <label>Password</label>
     <input type="password" v-model="password" required>
+    <p v-if="errMsg" class="error">{{errMsg}}</p>
     
     <label>Roles</label>
     <select v-model="role">
@@ -13,18 +14,23 @@
     </select>
     
     <label>Skills</label>
-    <input type="text" @keyup="addSkill" v-model="skill" required>
-    <div>{{skills}}</div>
+    <input type="text" @keyup.alt="addSkill" v-model="skill">
+    <div v-for="skill in skills" :key="skill">
+        <p>{{skill}} <span class="cross" @click="deleteSkill(skill)">&#10006</span></p>
+    </div>
     <div>
         <input type="checkbox" v-model="accept">
         <label>Accept Terms & Conditions</label>
     </div>
+    <div class="buttonAlign">
+        <button class="create">Create Account</button>
+    </div>
  
   </form>
-  <p>Email - {{email}}</p>
+  <!-- <p>Email - {{email}}</p>
   <p>Password - {{password}}</p>
   <p>Role - {{role}}</p>
-  <p>single- {{accept}}</p>
+  <p>single- {{accept}}</p> -->
 </template>
 
 <script>
@@ -37,14 +43,25 @@ export default {
             accept: false,
             skills:[],
             skill:"",
+            errMsg:"",
         }
     },
     methods:{
         addSkill(e){
-            if(e.key===","){
+            if(e.key==="," && this.skill){
                 this.skills.push(this.skill);
                 this.skill="";
             }   
+        },
+        deleteSkill(skill){
+            this.skills= this.skills.filter(loopSkill=>{
+                return loopSkill!= skill;
+            })
+        },
+        submit(){
+            if(this.password.length < 8){
+                this.errMsg="Password Must be 8 Char"
+            }
         }
     }
 }
@@ -83,6 +100,22 @@ export default {
         margin: 0 10px 0 0;
         position: relative;
         top: 3px;
+    }
+    .cross{
+        cursor: pointer;
+        color: crimson;
+    }
+    .create{
+        background-color: royalblue;
+        padding:8px;
+        color: white;
+        border-radius: 10px;
+    }
+    .buttonAlign{
+        text-align: center;
+    }
+    .error{
+        color: crimson;
     }
 
 </style>
